@@ -1,0 +1,631 @@
+/* =========================================
+   DESIGN DNA: Full-Width Cartoon Maximalista
+   Inspirado em: HQ Panels + Nisshin Retro + Oscar Portfolio
+========================================= */
+
+:root {
+    /* Paleta Vibrante Cartoon */
+    --purple: #6B5CE7;
+    --orange: #FF6B35;
+    --mint: #00C9A7;
+    --pink: #FF2D87;
+    --yellow: #FFD700;
+    --blue: #2D7DD2;
+    --dark: #111111;
+    --white: #FFFFFF;
+    --cream: #FFF8E7;
+
+    /* Tipografia */
+    --font-display: 'Bangers', cursive;
+    --font-body: 'Nunito', sans-serif;
+
+    /* Espaçamento */
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 32px;
+    --space-xl: 64px;
+    --space-2xl: 96px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--dark);
+    color: var(--white);
+    font-family: var(--font-body);
+    font-weight: 700;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* =========================================
+   ABERTURA (CAPA DE GIBI)
+========================================= */
+#intro-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9999;
+    pointer-events: none; /* Deixa os cliques vazarem mas a animação GSAP trava no inicio */
+}
+
+.intro-cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #22D4F0; /* Ciano clássico */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 15px solid #111; /* Borda grossa de papel */
+}
+
+/* Raios Sunburst estilo HQ */
+.intro-sunburst {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: repeating-conic-gradient(
+        from 0deg,
+        transparent 0deg 10deg,
+        rgba(255, 255, 255, 0.4) 10deg 20deg
+    );
+    z-index: 0;
+}
+
+/* Halftone na capa */
+.intro-halftone {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.15) 2px, transparent 2.5px);
+    background-size: 10px 10px;
+    z-index: 1;
+}
+
+/* Faixa do topo */
+.intro-top-banner {
+    position: relative;
+    z-index: 2;
+    background: #111;
+    color: #FFF;
+    text-align: center;
+    padding: 5px 0;
+    font-family: var(--font-body);
+    font-weight: 900;
+    letter-spacing: 2px;
+    border-bottom: 5px solid #111;
+}
+
+/* Preço e Selo no topo */
+.intro-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 30px;
+}
+
+.intro-price {
+    background: #FFF;
+    border: 5px solid #111;
+    padding: 5px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-display);
+    color: #111; /* Consertando texto invisível */
+    transform: rotate(2deg); /* Imperfeição Comic */
+    box-shadow: 3px 3px 0 #111;
+}
+
+.intro-price .val {
+    font-size: 3.5rem;
+    line-height: 1;
+}
+
+.intro-price .date {
+    font-size: 1rem;
+    font-family: var(--font-body);
+    font-weight: 900;
+    line-height: 1.1;
+    text-transform: uppercase;
+}
+
+.intro-seal {
+    width: 90px;
+    height: 90px;
+    background: #FFF;
+    border: 5px solid #111;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    color: #111; /* Consertando texto invisível */
+    transform: rotate(-1deg);
+    box-shadow: 3px 3px 0 #111;
+}
+.seal-inner {
+    border: 3px dashed #111;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-family: var(--font-body);
+    font-weight: 900;
+    text-align: center;
+}
+
+/* Título Gigante Centralizado (Acima do Cubo) */
+.intro-title {
+    position: relative;
+    z-index: 5;
+    font-family: var(--font-display);
+    font-size: clamp(6rem, 18vw, 14rem);
+    line-height: 0.8;
+    letter-spacing: 2px;
+    color: #FFD500; /* Amarelo Comic */
+    text-transform: uppercase;
+    /* Efeito de extrusão 3D e borda de nanquim dura */
+    text-shadow: 
+        3px 3px 0 #111,
+        4px 4px 0 #111,
+        5px 5px 0 #111,
+        6px 6px 0 #111,
+        7px 7px 0 #111,
+        12px 12px 0 #E81C10; /* Vermelho Comic nas profundezas */
+    text-align: center;
+    margin-top: 5vh;
+    transform: rotate(-3deg);
+}
+
+/* Onde o cubo 3D ficará na ilusão */
+.intro-center {
+    flex: 1;
+    position: relative;
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.boom-bubble {
+    width: 250px;
+    margin-top: 150px;
+    margin-right: -250px;
+    animation: pulse 1s infinite alternate;
+}
+
+/* Código de Barras */
+.intro-barcode {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    background: #FFF;
+    border: 5px solid #111;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 5;
+    color: #111; /* Consertando texto invisível */
+    transform: rotate(-1.5deg); /* Imperfeição Comic */
+    box-shadow: 4px 4px 0 #111;
+}
+
+.intro-barcode .bars {
+    width: 120px;
+    height: 60px;
+    background: 
+        linear-gradient(to right, 
+            #111 0%, #111 5%, transparent 5%, transparent 8%,
+            #111 8%, #111 12%, transparent 12%, transparent 15%,
+            #111 15%, #111 25%, transparent 25%, transparent 30%,
+            #111 30%, #111 32%, transparent 32%, transparent 40%,
+            #111 40%, #111 45%, transparent 45%, transparent 48%,
+            #111 48%, #111 55%, transparent 55%, transparent 60%,
+            #111 60%, #111 65%, transparent 65%, transparent 70%,
+            #111 70%, #111 72%, transparent 72%, transparent 80%,
+            #111 80%, #111 90%, transparent 90%, transparent 95%,
+            #111 95%, #111 100%);
+    margin-bottom: 5px;
+}
+.intro-barcode span {
+    font-family: monospace;
+    font-weight: 900;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+}
+
+/* =========================================
+   CUBO 3D (Fixo no Fundo)
+========================================= */
+.canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 50;
+    pointer-events: none;
+}
+
+.canvas-container canvas {
+    pointer-events: auto;
+}
+
+/* =========================================
+   SEÇÕES FULL-WIDTH (A Arma Principal)
+========================================= */
+.scroll-content {
+    position: relative;
+    /* Removido z-index para não prender o stacking context dos filhos */
+}
+
+.section {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: var(--space-2xl) var(--space-lg);
+}
+
+.section-content {
+    max-width: 1100px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    z-index: 100; /* Botões e textos ficam ACIMA do canvas (z-index 50) */
+    position: relative;
+    pointer-events: none; /* Deixa os cliques vazarem para o cubo 3D por trás */
+}
+
+/* Cores de Fundo por Seção */
+.section-hero {
+    background: var(--purple);
+    align-items: flex-start;
+    padding-top: 10px; /* Bem colado no topo, reduzindo o buraco ao máximo */
+}
+.section-invent   { background: var(--orange); }
+.section-anatomy  { background: var(--mint); color: var(--dark); }
+.section-fever    { background: var(--pink); }
+.section-math     { background: var(--yellow); color: var(--dark); }
+.section-speed    { background: var(--blue); }
+.section-footer   { background: var(--dark); min-height: 50vh; }
+
+/* Padrão Xadrez sutil em seções claras (Estilo Nisshin) */
+.section-anatomy::before,
+.section-math::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image:
+        linear-gradient(45deg, rgba(0,0,0,0.04) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(0,0,0,0.04) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(0,0,0,0.04) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(0,0,0,0.04) 75%);
+    background-size: 30px 30px;
+    background-position: 0 0, 0 15px, 15px -15px, -15px 0px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Halftone sutil em seções escuras */
+.section-hero::before,
+.section-fever::before,
+.section-speed::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.08) 1.5px, transparent 2px);
+    background-size: 12px 12px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* =========================================
+   TIPOGRAFIA GIGANTE
+========================================= */
+.section-title {
+    font-family: var(--font-display);
+    font-size: clamp(3.5rem, 10vw, 8rem);
+    line-height: 0.95;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 5;
+    pointer-events: auto; /* Permite selecionar texto */
+}
+
+/* Contorno de texto para seções claras */
+.section-anatomy .section-title,
+.section-math .section-title {
+    text-shadow: 4px 4px 0px rgba(0,0,0,0.15);
+}
+
+.section-subtitle {
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.9;
+    pointer-events: auto;
+}
+
+.section-text {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    line-height: 1.7;
+    max-width: 700px;
+    pointer-events: auto;
+}
+
+.section-text strong {
+    font-size: 1.1em;
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 4px;
+}
+
+/* Stat gigante */
+.big-number {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 4rem);
+    letter-spacing: 2px;
+    display: block;
+    margin: var(--space-md) 0;
+}
+
+/* Layout lado a lado (texto + espaço para cubo) */
+.section-content.split {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-xl);
+}
+
+.split .text-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Reduzido drasticamente para juntar título, texto e botão */
+}
+
+.btn-row {
+    display: flex;
+    gap: var(--space-md);
+    margin-top: 4px; /* Mais colado ao texto */
+}
+
+.split .visual-side {
+    flex: 1;
+    min-height: 300px; /* Espaço reservado para o cubo aparecer por trás */
+}
+
+/* Alinhamento à direita para variação */
+.section-content.align-right {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.section-content.align-right .section-text {
+    margin-left: auto;
+}
+
+.section-content.align-center {
+    align-items: center;
+    text-align: center;
+}
+
+.section-content.align-center .section-text {
+    margin: 0 auto;
+}
+
+/* =========================================
+   BOTÕES CARTOON
+========================================= */
+.comic-btn {
+    font-family: var(--font-display);
+    font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+    padding: var(--space-md) var(--space-xl);
+    background-color: var(--white);
+    color: var(--dark);
+    border: 4px solid var(--dark);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 6px 6px 0px var(--dark);
+    position: relative;
+    display: inline-block;
+    pointer-events: auto;
+}
+
+.comic-btn:hover {
+    transform: scale(1.05) rotate(-2deg);
+    box-shadow: 10px 10px 0px var(--dark);
+}
+
+.comic-btn:active {
+    transform: scale(0.95) translate(4px, 4px);
+    box-shadow: 0px 0px 0px var(--dark);
+    transition: all 0.08s;
+}
+
+/* Cores dos botões */
+.btn-yellow  { background: var(--yellow); }
+.btn-cyan    { background: #00E5FF; }
+.btn-pink    { background: var(--pink); color: var(--white); }
+.btn-orange  { background: var(--orange); color: var(--white); }
+.btn-purple  { background: var(--purple); color: var(--white); }
+
+.btn-row {
+    display: flex;
+    gap: var(--space-md);
+    flex-wrap: wrap;
+}
+
+/* =========================================
+   DIVISORES SVG (Ondas entre seções)
+========================================= */
+.wave-divider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+    z-index: 10;
+    margin-top: -2px;
+    margin-bottom: -2px;
+}
+
+.wave-divider svg {
+    display: block;
+    width: 100%;
+    height: 80px;
+}
+
+/* =========================================
+   DECORAÇÕES (Sparkles, Nuvens, Estrelas)
+========================================= */
+
+/* Indicador de Scroll na Hero Section */
+.scroll-indicator {
+    position: absolute;
+    bottom: 12vh; /* Mais alto para garantir visibilidade imediata (acima da dobra) */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+    animation: bounce 2s infinite;
+    pointer-events: none; /* Para não bloquear o cubo */
+    z-index: 100;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+    40% { transform: translateY(-15px) translateX(-50%); }
+    60% { transform: translateY(-7px) translateX(-50%); }
+}
+
+/* Sparkles ✦ */
+.sparkle {
+    position: absolute;
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.6);
+    pointer-events: none;
+    z-index: 3;
+    animation: sparkle-pulse 2s ease-in-out infinite alternate;
+}
+
+.section-anatomy .sparkle,
+.section-math .sparkle {
+    color: rgba(0, 0, 0, 0.15);
+}
+
+@keyframes sparkle-pulse {
+    0% { transform: scale(0.8) rotate(0deg); opacity: 0.4; }
+    100% { transform: scale(1.3) rotate(180deg); opacity: 1; }
+}
+
+/* Nuvens decorativas (Estilo Nisshin) */
+.cloud {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.cloud svg {
+    fill: rgba(255, 255, 255, 0.2);
+    width: 200px;
+    height: auto;
+}
+
+.section-anatomy .cloud svg,
+.section-math .cloud svg {
+    fill: rgba(0, 0, 0, 0.06);
+}
+
+/* Halftone Dots decorativo como item separado */
+.halftone-accent {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    background-image: radial-gradient(circle, currentColor 2px, transparent 2.5px);
+    background-size: 10px 10px;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 2;
+    border-radius: 50%;
+}
+
+/* Badges/Tags decorativos */
+.fun-badge {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    padding: 6px 16px;
+    border: 3px solid currentColor;
+    border-radius: 50px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+/* =========================================
+   RESPONSIVIDADE
+========================================= */
+@media (max-width: 768px) {
+    .section {
+        padding: var(--space-xl) var(--space-md);
+    }
+
+    .section-content.split {
+        flex-direction: column;
+    }
+
+    .split .visual-side {
+        display: none;
+    }
+
+    .section-content.align-right {
+        align-items: flex-start;
+        text-align: left;
+    }
+
+    .section-content.align-right .section-text {
+        margin-left: 0;
+    }
+
+    .btn-row {
+        flex-direction: column;
+    }
+
+    .comic-btn {
+        width: 100%;
+        text-align: center;
+    }
+}
