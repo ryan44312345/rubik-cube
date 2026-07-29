@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
@@ -22,10 +22,20 @@ const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
 renderer.setSize(container.clientWidth, container.clientHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = false;
-controls.enablePan = false;
-controls.enableZoom = false; // Desativa o conflito com o scroll do mouse
+const controls = new TrackballControls(camera, renderer.domElement);
+controls.mouseButtons = {
+    LEFT: THREE.MOUSE.PAN,
+    MIDDLE: THREE.MOUSE.ZOOM,
+    RIGHT: THREE.MOUSE.ROTATE
+};
+controls.rotateSpeed = 4.0; // Sensibilidade do giro livre
+controls.noPan = true; // Desativa arrastar a câmera de lado
+controls.noZoom = true; // Desativa zoom para não conflitar com o scroll da página
+controls.staticMoving = false; // Ativa a inércia (física de deslize)
+controls.dynamicDampingFactor = 0.08; // Suavidade da inércia
+
+// Evita o menu de contexto nativo ao usar o botão direito
+renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
 controls.minDistance = 4;
 controls.maxDistance = 25;
 
@@ -447,6 +457,8 @@ const dragPlane = new THREE.Plane();
 const dragPlaneIntersect = new THREE.Vector3();
 
 window.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return; // Ignora o clique direito e do meio na interação do cubo
+
     const rect = renderer.domElement.getBoundingClientRect();
     mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
     mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
@@ -541,6 +553,7 @@ window.addEventListener('resize', () => {
             1 / (h * renderer.getPixelRatio())
         );
     }
+    controls.handleResize();
 });
 
 // --- INTRO SEQUENCE (PAPEL RASGANDO) ---
