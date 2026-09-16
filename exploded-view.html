@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo de Rubik - Exploded View</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --bg: #0a0a0a;
+            --fg: #f5f5f5;
+            --muted: #888;
+            --accent: #FFD700;
+            --card: #141414;
+            --border: #333;
+        }
+        
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--fg);
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-bottom: 3px solid var(--border);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .header h1 {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(2rem, 4vw, 3rem);
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-shadow: 3px 3px 0 #111, 6px 6px 0 #FF6B35;
+            margin-bottom: 0.25rem;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        
+        /* Controls Panel */
+        .controls-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem 2rem;
+            background: var(--card);
+            border-bottom: 2px solid var(--border);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .btn-group { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+        
+        .comic-btn {
+            font-family: 'Bangers', cursive;
+            font-size: 1rem;
+            padding: 0.7rem 1.3rem;
+            border: 3px solid #111;
+            border-radius: 8px;
+            cursor: pointer;
+            background: var(--card);
+            color: var(--fg);
+            transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+            white-space: nowrap;
+        }
+        
+        .comic-btn:hover { transform: translateY(-2px); box-shadow: 5px 5px 0 #111; }
+        .comic-btn:active { transform: translateY(1px); box-shadow: 2px 2px 0 #111; }
+        .comic-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .btn-explode { background: #00C9A7; color: #111; }
+        .btn-assemble { background: #FFD700; color: #111; }
+        .btn-auto { background: #FF6B35; color: #111; }
+        .btn-reset { background: #2D7DD2; color: #fff; }
+        .btn-wireframe { background: #FF2D87; color: #fff; }
+        
+        /* Sliders */
+        .slider-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+        
+        .slider-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            min-width: 180px;
+        }
+        
+        .slider-item label {
+            font-family: 'Bangers', cursive;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            color: var(--accent);
+        }
+        
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            max-width: 200px;
+            accent-color: var(--accent);
+            height: 6px;
+            border-radius: 3px;
+        }
+        
+        .slider-value {
+            font-family: 'Bangers', cursive;
+            font-size: 1rem;
+            color: var(--accent);
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        /* Legend */
+        .legend-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 2rem;
+            background: var(--card);
+            border-bottom: 2px solid var(--border);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .legend-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #111;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .legend-item.disabled { opacity: 0.4; }
+        
+                /* Piece Info Panel */
+                        .piece-info-panel {
+                            position: fixed;
+                            top: 50%;
+                            right: 1rem;
+                            transform: translateY(-50%);
+                            width: 260px;
+                            background: var(--card);
+                            border: 3px solid var(--border);
+                            border-radius: 12px;
+                            padding: 1.5rem 1.2rem;
+                            font-family: 'Nunito', sans-serif;
+                            z-index: 20;
+                            display: none;
+                            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+                            animation: slideIn 0.3s ease-out;
+                            text-align: center;
+                        }
+        
+                        @keyframes slideIn {
+                            from { opacity: 0; transform: translateY(-50%) translateX(20px); }
+                            to { opacity: 1; transform: translateY(-50%) translateX(0); }
+                        }
+        
+                        .piece-info-panel.visible { display: block; }
+        
+                        .piece-info-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 1rem;
+                            padding-bottom: 0.75rem;
+                            border-bottom: 2px solid var(--border);
+                        }
+        
+                        .piece-info-title {
+                            font-family: 'Bangers', cursive;
+                            font-size: 1.2rem;
+                            color: var(--accent);
+                            letter-spacing: 1px;
+                        }
+        
+                        .piece-info-close {
+                            background: none;
+                            border: none;
+                            color: var(--muted);
+                            font-size: 1.5rem;
+                            cursor: pointer;
+                            padding: 0;
+                            line-height: 1;
+                            transition: color 0.2s;
+                        }
+        
+                        .piece-info-close:hover { color: var(--accent); }
+        
+                        .piece-info-main {
+                            margin-bottom: 0.5rem;
+                        }
+        
+                        .piece-info-type-line {
+                            font-family: 'Bangers', cursive;
+                            font-size: 1.4rem;
+                            color: var(--fg);
+                            letter-spacing: 1px;
+                            line-height: 1.3;
+                        }
+        
+                        .piece-info-count-line {
+                            font-family: 'Nunito', sans-serif;
+                            font-size: 1rem;
+                            color: var(--muted);
+                            font-weight: 600;
+                        }
+        
+                        .piece-info-colors {
+                            display: flex;
+                            gap: 0.5rem;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                            margin-top: 1rem;
+                            padding-top: 1rem;
+                            border-top: 1px solid var(--border);
+                        }
+        
+                        .piece-info-color-dot {
+                            width: 28px;
+                            height: 28px;
+                            border: 2px solid #111;
+                            border-radius: 50%;
+                            box-shadow: inset 0 0 8px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
+                            transition: transform 0.1s;
+                        }
+        
+                        .piece-info-color-dot:hover {
+                            transform: scale(1.15);
+                        }
+
+                        /* Highlight effect on hovered piece */
+                        .piece-highlight {
+                            filter: brightness(1.3) drop-shadow(0 0 8px var(--accent));
+                        }
+
+                        /* Canvas Container */
+        #canvas-container {
+            width: 100vw;
+            height: calc(100vh - 200px);
+            min-height: 400px;
+            position: relative;
+        }
+        
+        #three-canvas { 
+            width: 100%; 
+            height: 100%; 
+            display: block; 
+            background: var(--bg);
+        }
+        
+        /* Stats overlay */
+        .stats-overlay {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            background: rgba(10,10,10,0.9);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.8rem;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        .stat-row { display: flex; gap: 1.5rem; }
+        .stat-label { color: var(--muted); }
+        .stat-value { color: var(--accent); font-family: 'Bangers', cursive; letter-spacing: 1px; }
+        
+        /* Mobile adjustments */
+        @media (max-width: 768px) {
+            .controls-panel, .legend-group { padding: 0.75rem 1rem; }
+            .header { padding: 1rem; }
+            #canvas-container { height: calc(100vh - 260px); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <h1>CUBO DE RUBIK - EXPLODED VIEW</h1>
+    <p class="subtitle">Visualização explodida: peças organizadas por tipo (Centros, Arestas, Quinas)</p>
+</header>
+
+<!-- Controls Panel -->
+<div class="controls-panel">
+    <div class="btn-group">
+        <button class="comic-btn btn-explode" id="btnExplode">EXPLODIR</button>
+        <button class="comic-btn btn-assemble" id="btnAssemble">MONTAR</button>
+        <button class="comic-btn btn-auto" id="btnAutoLoop">AUTO LOOP</button>
+        <button class="comic-btn btn-reset" id="btnReset">RESET</button>
+        <button class="comic-btn btn-wireframe" id="btnWireframe">WIREFRAME</button>
+    </div>
+</div>
+
+<div class="controls-panel">
+    <div class="slider-group">
+        <div class="slider-item">
+            <label>Distância da Explosão</label>
+            <div class="slider-row">
+                <input type="range" id="explosionDistance" min="0" max="2.5" step="0.05" value="1.5">
+                <span class="slider-value" id="explosionDistValue">1.50</span>
+            </div>
+        </div>
+        <div class="slider-item">
+            <label>Velocidade da Animação</label>
+            <div class="slider-row">
+                <input type="range" id="animationSpeed" min="0.1" max="2.0" step="0.05" value="0.8">
+                <span class="slider-value" id="animSpeedValue">0.80s</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Legend / Piece Toggles -->
+<div class="legend-group">
+    <span style="font-family: 'Bangers', cursive; letter-spacing: 1px; color: var(--accent);">MOSTRAR:</span>
+    <label class="legend-item">
+        <input type="checkbox" id="showCenters" checked>
+        <span class="legend-color" style="background: #fff;"></span>
+        <span>Centros (6) - Fixos</span>
+    </label>
+    <label class="legend-item">
+        <input type="checkbox" id="showEdges" checked>
+        <span class="legend-color" style="background: linear-gradient(45deg, #fff 50%, #ffd700 50%);"></span>
+        <span>Arestas (12) - 2 cores</span>
+    </label>
+    <label class="legend-item">
+        <input type="checkbox" id="showCorners" checked>
+        <span class="legend-color" style="background: linear-gradient(45deg, #00ff00 33%, #ff8800 33%, #ff0000 34%);"></span>
+        <span>Quinas (8) - 3 cores</span>
+    </label>
+    <label class="legend-item">
+        <input type="checkbox" id="showCore" checked>
+        <span class="legend-color" style="background: #1a1a1a; border-color: #444;"></span>
+        <span>Núcleo (Core)</span>
+    </label>
+</div>
+
+<!-- Canvas -->
+<div id="canvas-container">
+    <canvas id="three-canvas"></canvas>
+</div>
+
+<!-- Stats -->
+<div class="stats-overlay">
+    <div class="stat-row">
+        <span class="stat-label">Peças visíveis:</span>
+        <span class="stat-value" id="statVisible">26</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label">Estado:</span>
+        <span class="stat-value" id="statState">MONTADO</span>
+    </div>
+    <div class="stat-row">
+        <span class="stat-label">FPS:</span>
+        <span class="stat-value" id="statFPS">60</span>
+    </div>
+</div>
+
+<!-- Piece Info Panel -->
+<div class="piece-info-panel" id="pieceInfoPanel">
+    <div class="piece-info-header">
+        <span class="piece-info-title">INFO DA PEÇA</span>
+        <button class="piece-info-close" id="closePieceInfo">&times;</button>
+    </div>
+    <div class="piece-info-main">
+        <div class="piece-info-type-line" id="pieceInfoTypeLine">Peças de canto (branco)</div>
+        <div class="piece-info-count-line" id="pieceInfoCountLine">(4 peças)</div>
+    </div>
+    <div class="piece-info-colors" id="pieceInfoColors"></div>
+</div>
+
+<!-- Import Maps -->
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+        "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.2/index.js"
+    }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
+import gsap from 'gsap';
+
+// ========== SCENE SETUP ==========
+const canvas = document.getElementById('three-canvas');
+const container = document.getElementById('canvas-container');
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0a);
+
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
+camera.position.set(6, 5, 10);
+
+const controls = new TrackballControls(camera, renderer.domElement);
+controls.mouseButtons = {
+    LEFT: THREE.MOUSE.PAN,
+    MIDDLE: THREE.MOUSE.ZOOM,
+    RIGHT: THREE.MOUSE.ROTATE
+};
+controls.rotateSpeed = 3.5;
+controls.noPan = false;
+controls.noZoom = false;
+controls.staticMoving = false;
+controls.dynamicDampingFactor = 0.1;
+renderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+controls.minDistance = 3;
+controls.maxDistance = 40;
+
+// Lights
+const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+scene.add(ambient);
+
+const dirLight = new THREE.DirectionalLight(0xffffff, 1);
+dirLight.position.set(8, 15, 10);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.set(2048, 2048);
+dirLight.shadow.camera.near = 1;
+dirLight.shadow.camera.far = 50;
+dirLight.shadow.camera.left = -10;
+dirLight.shadow.camera.right = 10;
+dirLight.shadow.camera.top = 10;
+dirLight.shadow.camera.bottom = -10;
+scene.add(dirLight);
+
+const fillLight = new THREE.DirectionalLight(0x4488ff, 0.4);
+fillLight.position.set(-8, 8, -8);
+scene.add(fillLight);
+
+const rimLight = new THREE.DirectionalLight(0xffaa00, 0.3);
+rimLight.position.set(0, -15, 0);
+scene.add(rimLight);
+
+// Grid floor
+const gridHelper = new THREE.GridHelper(30, 60, 0x222222, 0x111111);
+gridHelper.position.y = -2.5;
+scene.add(gridHelper);
+
+// Axes helper (debug)
+const axesHelper = new THREE.AxesHelper(5);
+scene.add(axesHelper);
+
+// ========== COLORS & GEOMETRY ==========
+const cubeColors = {
+    U: 0xFFFFFF, D: 0xFFD500, F: 0x00FF00,
+    B: 0x0000FF, L: 0xFF8800, R: 0xFF0000
+};
+
+const cubeSize = 0.88;
+const gap = 0.02;
+const step = cubeSize + gap;
+
+const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+const outlineSize = cubeSize + 0.1;
+const outlineGeometry = new THREE.BoxGeometry(outlineSize, outlineSize, outlineSize);
+const outlineMaterial = new THREE.MeshBasicMaterial({ color: 0x111111, side: THREE.BackSide });
+
+function createCartoonMaterial(colorHex) {
+    if (colorHex === 0x0A0A0A) {
+        return new THREE.MeshBasicMaterial({ color: colorHex });
+    }
+    return new THREE.ShaderMaterial({
+        uniforms: { 
+            baseColor: { value: new THREE.Color(colorHex) },
+            emissive: { value: new THREE.Color(0x000000) },
+            emissiveIntensity: { value: 0.0 }
+        },
+        vertexShader: `
+            varying vec2 vUv;
+            void main() {
+                vUv = uv;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            }
+        `,
+        fragmentShader: `
+            uniform vec3 baseColor;
+            uniform vec3 emissive;
+            uniform float emissiveIntensity;
+            varying vec2 vUv;
+            void main() {
+                vec2 centered = vUv - 0.5;
+                float c = 0.7071; float s = 0.7071;
+                vec2 ruv = vec2(centered.x * c - centered.y * s, centered.x * s + centered.y * c);
+                vec2 grid = fract(ruv * 22.0);
+                float dist = distance(grid, vec2(0.5));
+                float dot = 1.0 - smoothstep(0.15, 0.25, dist);
+                vec3 finalColor = mix(baseColor, vec3(0.0), dot * 0.4);
+                finalColor += emissive * emissiveIntensity;
+                gl_FragColor = vec4(finalColor, 1.0);
+            }
+        `
+    });
+}
+
+const coreMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8, roughness: 0.2 });
+const springMaterial = new THREE.MeshStandardMaterial({ color: 0x444444, metalness: 0.9, roughness: 0.1 });
+const pinMaterial = new THREE.MeshStandardMaterial({ color: 0x2a2a2a, metalness: 0.7, roughness: 0.3 });
+
+// ========== CREATE CUBE PIECES ==========
+const cubeGroup = new THREE.Group();
+scene.add(cubeGroup);
+
+const pieces = { centers: [], edges: [], corners: [] };
+const originalPositions = new Map();
+const pieceTypes = new Map();
+
+const BLACK_INTERNAL = 0x0A0A0A;
+
+for (let x = -1; x <= 1; x++) {
+    for (let y = -1; y <= 1; y++) {
+        for (let z = -1; z <= 1; z++) {
+            if (x === 0 && y === 0 && z === 0) continue; // No center piece
+            
+            const isCenter = (x === 0 || y === 0 || z === 0) && !((x !== 0 && y !== 0) || (x !== 0 && z !== 0) || (y !== 0 && z !== 0));
+            const isCorner = (x !== 0 && y !== 0 && z !== 0);
+            const isEdge = !isCenter && !isCorner;
+            
+            let type = isCenter ? 'centers' : isEdge ? 'edges' : 'corners';
+            
+            // Only color faces that are on the EXTERIOR of the cube
+            const materials = [
+                // Right face (+X) - only colored if x === 1
+                createCartoonMaterial(x === 1 ? cubeColors.R : BLACK_INTERNAL),
+                // Left face (-X) - only colored if x === -1
+                createCartoonMaterial(x === -1 ? cubeColors.L : BLACK_INTERNAL),
+                // Up face (+Y) - only colored if y === 1
+                createCartoonMaterial(y === 1 ? cubeColors.U : BLACK_INTERNAL),
+                // Down face (-Y) - only colored if y === -1
+                createCartoonMaterial(y === -1 ? cubeColors.D : BLACK_INTERNAL),
+                // Front face (+Z) - only colored if z === 1
+                createCartoonMaterial(z === 1 ? cubeColors.F : BLACK_INTERNAL),
+                // Back face (-Z) - only colored if z === -1
+                createCartoonMaterial(z === -1 ? cubeColors.B : BLACK_INTERNAL)
+            ];
+            
+            const cubie = new THREE.Mesh(geometry, materials);
+            cubie.castShadow = true;
+            cubie.receiveShadow = true;
+            
+            const outline = new THREE.Mesh(outlineGeometry, outlineMaterial);
+            cubie.add(outline);
+            
+            const origPos = new THREE.Vector3(x * step, y * step, z * step);
+            cubie.position.copy(origPos);
+            originalPositions.set(cubie, origPos.clone());
+            pieceTypes.set(cubie, type);
+            
+            // Store grid position for notation lookup
+            cubie.userData.gridPos = new THREE.Vector3(x, y, z);
+            cubie.userData.pieceType = type;
+            
+            pieces[type].push(cubie);
+            cubeGroup.add(cubie);
+        }
+    }
+}
+
+// ========== CREATE CORE ==========
+function createCore() {
+    const coreGroup = new THREE.Group();
+    
+    const bodyGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.7, 16);
+    const body = new THREE.Mesh(bodyGeo, coreMaterial);
+    coreGroup.add(body);
+    
+    const sphereGeo = new THREE.SphereGeometry(0.28, 16, 12);
+    const sphere = new THREE.Mesh(sphereGeo, coreMaterial);
+    coreGroup.add(sphere);
+    
+    const armDirections = [
+        { axis: 'x', dir: 1 }, { axis: 'x', dir: -1 },
+        { axis: 'y', dir: 1 }, { axis: 'y', dir: -1 },
+        { axis: 'z', dir: 1 }, { axis: 'z', dir: -1 }
+    ];
+    
+    armDirections.forEach(({ axis, dir }) => {
+        const armGroup = new THREE.Group();
+        const armLen = 0.65;
+        const armGeo = new THREE.CylinderGeometry(0.18, 0.18, armLen, 12);
+        const arm = new THREE.Mesh(armGeo, coreMaterial);
+        
+        if (axis === 'x') { arm.rotation.z = -Math.PI / 2; arm.position.x = dir * (armLen / 2 + 0.35); }
+        else if (axis === 'y') { arm.position.y = dir * (armLen / 2 + 0.35); }
+        else { arm.rotation.x = Math.PI / 2; arm.position.z = dir * (armLen / 2 + 0.35); }
+        armGroup.add(arm);
+        
+        // Spring
+        const springGeo = new THREE.TorusGeometry(0.08, 0.025, 8, 24, Math.PI * 6);
+        const spring = new THREE.Mesh(springGeo, springMaterial);
+        const springOffset = dir * 0.15;
+        if (axis === 'x') { spring.rotation.z = -Math.PI / 2; spring.position.x = springOffset; }
+        else if (axis === 'y') { spring.position.y = springOffset; }
+        else { spring.rotation.x = Math.PI / 2; spring.position.z = springOffset; }
+        armGroup.add(spring);
+        
+        // Pin
+        const pinGeo = new THREE.CylinderGeometry(0.12, 0.15, 0.25, 12);
+        const pin = new THREE.Mesh(pinGeo, pinMaterial);
+        const pinOffset = dir * (armLen / 2 + 0.125);
+        if (axis === 'x') pin.position.x = pinOffset;
+        else if (axis === 'y') pin.position.y = pinOffset;
+        else pin.position.z = pinOffset;
+        armGroup.add(pin);
+        
+        // Grooves
+        for (let i = 1; i <= 2; i++) {
+            const grooveOffset = dir * (i * armLen / 3);
+            const grooveGeo = new THREE.BoxGeometry(0.22, 0.06, 0.22);
+            const groove = new THREE.Mesh(grooveGeo, coreMaterial);
+            if (axis === 'x') { groove.rotation.z = -Math.PI / 2; groove.position.x = grooveOffset; }
+            else if (axis === 'y') { groove.position.y = grooveOffset; }
+            else { groove.rotation.x = Math.PI / 2; groove.position.z = grooveOffset; }
+            armGroup.add(groove);
+        }
+        
+        coreGroup.add(armGroup);
+    });
+    
+    coreGroup.scale.setScalar(1);
+    return coreGroup;
+}
+
+const core = createCore();
+cubeGroup.add(core);
+core.visible = true;
+
+// ========== STATE ==========
+let isExploded = false;
+let autoLoop = false;
+let autoLoopId = null;
+let wireframeMode = false;
+let currentExplosionDist = 1.5;
+let currentAnimSpeed = 0.8;
+
+// ========== EXPLOSION LOGIC ==========
+function calculateExplodedPosition(cubie, distance) {
+    const orig = originalPositions.get(cubie);
+    const dir = orig.clone().normalize();
+    const baseDist = orig.length();
+    const explodeDist = baseDist * distance + 0.3;
+    return dir.multiplyScalar(explodeDist);
+}
+
+function setPiecesVisibility() {
+    pieces.centers.forEach(p => p.visible = document.getElementById('showCenters').checked);
+    pieces.edges.forEach(p => p.visible = document.getElementById('showEdges').checked);
+    pieces.corners.forEach(p => p.visible = document.getElementById('showCorners').checked);
+    core.visible = document.getElementById('showCore').checked;
+    updateStats();
+}
+
+function setWireframe(enabled) {
+    wireframeMode = enabled;
+    cubeGroup.traverse(obj => {
+        if (obj.isMesh && obj.material) {
+            if (Array.isArray(obj.material)) {
+                obj.material.forEach(m => m.wireframe = enabled);
+            } else {
+                obj.material.wireframe = enabled;
+            }
+        }
+    });
+}
+
+function explode(duration = currentAnimSpeed) {
+    if (isExploded) return;
+    isExploded = true;
+    updateButtonStates();
+    updateStats();
+    
+    // Animate pieces
+    let i = 0;
+    const allPieces = [...pieces.centers, ...pieces.edges, ...pieces.corners];
+    
+    allPieces.forEach(cubie => {
+        if (!cubie.visible) return;
+        const targetPos = calculateExplodedPosition(cubie, currentExplosionDist);
+        const delay = i++ * 0.01;
+        
+        gsap.to(cubie.position, {
+            x: targetPos.x, y: targetPos.y, z: targetPos.z,
+            duration, delay, ease: "back.out(1.4)"
+        });
+        
+        gsap.to(cubie.rotation, {
+            x: gsap.utils.random(-0.3, 0.3),
+            y: gsap.utils.random(-0.3, 0.3),
+            z: gsap.utils.random(-0.3, 0.3),
+            duration, delay, ease: "power2.out"
+        });
+    });
+    
+    // Core animation
+    core.scale.setScalar(0);
+    gsap.to(core.scale, { x: 1, y: 1, z: 1, duration: 0.5, delay: 0.1, ease: "elastic.out(1, 0.5)" });
+    gsap.to(core.rotation, { y: Math.PI * 2, duration: 10, ease: "none", repeat: -1 });
+}
+
+function assemble(duration = currentAnimSpeed) {
+    if (!isExploded) return;
+    isExploded = false;
+    updateButtonStates();
+    updateStats();
+    
+    gsap.killTweensOf(core.rotation);
+    
+    let i = 0;
+    const allPieces = [...pieces.centers, ...pieces.edges, ...pieces.corners];
+    
+    allPieces.forEach(cubie => {
+        if (!cubie.visible) return;
+        const targetPos = originalPositions.get(cubie);
+        const delay = i++ * 0.008;
+        
+        gsap.to(cubie.position, {
+            x: targetPos.x, y: targetPos.y, z: targetPos.z,
+            duration, delay, ease: "back.inOut(1.7)"
+        });
+        
+        gsap.to(cubie.rotation, {
+            x: 0, y: 0, z: 0, duration, delay, ease: "power2.inOut"
+        });
+    });
+    
+    gsap.to(core.scale, {
+        x: 0, y: 0, z: 0, duration: 0.3, ease: "power2.in",
+        onComplete: () => { core.rotation.y = 0; }
+    });
+}
+
+function resetView() {
+    if (autoLoop) toggleAutoLoop();
+    assemble(0.5);
+    gsap.to(camera.position, { x: 6, y: 5, z: 10, duration: 1, ease: "power2.inOut" });
+    controls.target.set(0, 0, 0);
+    controls.update();
+    
+    document.getElementById('explosionDistance').value = 1.5;
+    document.getElementById('animationSpeed').value = 0.8;
+    currentExplosionDist = 1.5;
+    currentAnimSpeed = 0.8;
+    updateSliderValues();
+}
+
+function toggleAutoLoop() {
+    autoLoop = !autoLoop;
+    const btn = document.getElementById('btnAutoLoop');
+    btn.textContent = autoLoop ? 'PARAR AUTO' : 'AUTO LOOP';
+    btn.style.background = autoLoop ? '#666' : '#FF6B35';
+    
+    if (autoLoop) {
+        runAutoLoop();
+    } else if (autoLoopId) {
+        clearTimeout(autoLoopId);
+        autoLoopId = null;
+    }
+}
+
+function runAutoLoop() {
+    if (!autoLoop) return;
+    
+    const cycle = () => {
+        if (!autoLoop) return;
+        explode(currentAnimSpeed);
+        autoLoopId = setTimeout(() => {
+            if (!autoLoop) return;
+            assemble(currentAnimSpeed);
+            autoLoopId = setTimeout(cycle, currentAnimSpeed * 1000 + 500);
+        }, currentAnimSpeed * 1000 + 200);
+    };
+    cycle();
+}
+
+function updateButtonStates() {
+    document.getElementById('btnExplode').disabled = isExploded;
+    document.getElementById('btnAssemble').disabled = !isExploded;
+}
+
+function updateSliderValues() {
+    document.getElementById('explosionDistValue').textContent = currentExplosionDist.toFixed(2);
+    document.getElementById('animSpeedValue').textContent = currentAnimSpeed.toFixed(2) + 's';
+}
+
+function updateStats() {
+    let visible = 0;
+    [...pieces.centers, ...pieces.edges, ...pieces.corners].forEach(p => { if (p.visible) visible++; });
+    document.getElementById('statVisible').textContent = visible + (core.visible ? ' + core' : '');
+    document.getElementById('statState').textContent = isExploded ? 'EXPLODIDO' : 'MONTADO';
+}
+
+// ========== EVENT LISTENERS ==========
+document.getElementById('btnExplode').addEventListener('click', () => explode(currentAnimSpeed));
+document.getElementById('btnAssemble').addEventListener('click', () => assemble(currentAnimSpeed));
+document.getElementById('btnAutoLoop').addEventListener('click', toggleAutoLoop);
+document.getElementById('btnReset').addEventListener('click', resetView);
+document.getElementById('btnWireframe').addEventListener('click', () => {
+    wireframeMode = !wireframeMode;
+    setWireframe(wireframeMode);
+    document.getElementById('btnWireframe').textContent = wireframeMode ? 'SOLID' : 'WIREFRAME';
+    document.getElementById('btnWireframe').style.background = wireframeMode ? '#666' : '#FF2D87';
+});
+
+document.getElementById('explosionDistance').addEventListener('input', (e) => {
+    currentExplosionDist = parseFloat(e.target.value);
+    updateSliderValues();
+    if (isExploded) explode(0.3); // Quick re-explode to new distance
+});
+
+document.getElementById('animationSpeed').addEventListener('input', (e) => {
+    currentAnimSpeed = parseFloat(e.target.value);
+    updateSliderValues();
+});
+
+['showCenters', 'showEdges', 'showCorners', 'showCore'].forEach(id => {
+    document.getElementById(id).addEventListener('change', setPiecesVisibility);
+});
+
+// Keyboard shortcuts
+window.addEventListener('keydown', (e) => {
+    if (e.key === 'e' || e.key === 'E') explode(currentAnimSpeed);
+    if (e.key === 'm' || e.key === 'M') assemble(currentAnimSpeed);
+    if (e.key === 'a' || e.key === 'A') toggleAutoLoop();
+    if (e.key === 'r' || e.key === 'R') resetView();
+    if (e.key === 'w' || e.key === 'W') {
+        wireframeMode = !wireframeMode;
+        setWireframe(wireframeMode);
+        document.getElementById('btnWireframe').textContent = wireframeMode ? 'SOLID' : 'WIREFRAME';
+        document.getElementById('btnWireframe').style.background = wireframeMode ? '#666' : '#FF2D87';
+    }
+});
+
+// ========== PIECE CLICK / INFO SYSTEM ==========
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let selectedPiece = null;
+let hoverPiece = null;
+
+const colorNames = {
+    U: 'Branco (Cima)', D: 'Amarelo (Baixo)', F: 'Verde (Frente)',
+    B: 'Azul (Trás)', L: 'Laranja (Esquerda)', R: 'Vermelho (Direita)'
+};
+
+const colorHex = {
+    U: 0xFFFFFF, D: 0xFFD500, F: 0x00FF00,
+    B: 0x0000FF, L: 0xFF8800, R: 0xFF0000
+};
+
+const centerNotation = {
+    '0,1,0': 'U', '0,-1,0': 'D', '0,0,1': 'F',
+    '0,0,-1': 'B', '-1,0,0': 'L', '1,0,0': 'R'
+};
+
+const edgeNotation = {
+    '1,1,0': 'RU', '-1,1,0': 'LU', '1,-1,0': 'RD', '-1,-1,0': 'LD',
+    '0,1,1': 'FU', '0,1,-1': 'BU', '0,-1,1': 'FD', '0,-1,-1': 'BD',
+    '1,0,1': 'RF', '-1,0,1': 'LF', '1,0,-1': 'RB', '-1,0,-1': 'LB'
+};
+
+const cornerNotation = {
+    '1,1,1': 'RUF', '-1,1,1': 'LUF', '1,1,-1': 'RUB', '-1,1,-1': 'LUB',
+    '1,-1,1': 'RDF', '-1,-1,1': 'LDF', '1,-1,-1': 'RDB', '-1,-1,-1': 'LDB'
+};
+
+function getPieceNotation(cubie) {
+    const pos = cubie.userData.gridPos;
+    const key = `${pos.x},${pos.y},${pos.z}`;
+    const type = pieceTypes.get(cubie);
+    if (type === 'centers') return centerNotation[key];
+    if (type === 'edges') return edgeNotation[key];
+    if (type === 'corners') return cornerNotation[key];
+    return '?';
+}
+
+function getPieceColors(cubie) {
+    const type = pieceTypes.get(cubie);
+    const pos = cubie.userData.gridPos;
+    const colors = [];
+    
+    if (type === 'centers') {
+        if (pos.y === 1) colors.push('U');
+        else if (pos.y === -1) colors.push('D');
+        else if (pos.z === 1) colors.push('F');
+        else if (pos.z === -1) colors.push('B');
+        else if (pos.x === -1) colors.push('L');
+        else if (pos.x === 1) colors.push('R');
+    } else if (type === 'edges') {
+        if (pos.x === 1) colors.push('R');
+        else if (pos.x === -1) colors.push('L');
+        if (pos.y === 1) colors.push('U');
+        else if (pos.y === -1) colors.push('D');
+        if (pos.z === 1) colors.push('F');
+        else if (pos.z === -1) colors.push('B');
+    } else if (type === 'corners') {
+        if (pos.x === 1) colors.push('R');
+        else if (pos.x === -1) colors.push('L');
+        if (pos.y === 1) colors.push('U');
+        else if (pos.y === -1) colors.push('D');
+        if (pos.z === 1) colors.push('F');
+        else if (pos.z === -1) colors.push('B');
+    }
+    return colors;
+}
+
+function showPieceInfo(cubie) {
+    selectedPiece = cubie;
+    const type = pieceTypes.get(cubie);
+    const pos = cubie.userData.gridPos;
+    const colors = getPieceColors(cubie);
+    
+    // Determine type name in Portuguese and count per face color
+    let typeName, countPerColor;
+    if (type === 'centers') {
+        typeName = 'Centro';
+        countPerColor = 1;
+    } else if (type === 'edges') {
+        typeName = 'Peças de borda';
+        countPerColor = 4;
+    } else { // corners
+        typeName = 'Peças de canto';
+        countPerColor = 4;
+    }
+    
+    // Get the main face color for this piece (first color in the array)
+    const mainColor = colors[0];
+    const colorNamePt = colorNames[mainColor].split(' ')[0].toLowerCase(); // "Branco (Cima)" -> "branco"
+    
+    // Update panel - line 1: "Peças de canto (branco)"
+    document.getElementById('pieceInfoTypeLine').textContent = 
+        `${typeName} (${colorNamePt})`;
+    
+    // Line 2: "(4 peças)" or "(1 peça)"
+    const pieceWord = countPerColor === 1 ? 'peça' : 'peças';
+    document.getElementById('pieceInfoCountLine').textContent = 
+        `(${countPerColor} ${pieceWord})`;
+    
+    // Colors - show all face colors for this piece
+    const colorsContainer = document.getElementById('pieceInfoColors');
+    colorsContainer.innerHTML = '';
+    colors.forEach(c => {
+        const dot = document.createElement('div');
+        dot.className = 'piece-info-color-dot';
+        dot.style.backgroundColor = '#' + colorHex[c].toString(16).padStart(6, '0');
+        dot.title = colorNames[c];
+        colorsContainer.appendChild(dot);
+    });
+    
+    // Show panel
+    document.getElementById('pieceInfoPanel').classList.add('visible');
+    
+    // Highlight piece - use shader uniforms
+    cubie.traverse(obj => {
+        if (obj.isMesh && obj !== cubie.children[0] && obj.material.uniforms) { // Skip outline
+            obj.material.uniforms.emissive.value.setHex(0xFFD700);
+            obj.material.uniforms.emissiveIntensity.value = 0.3;
+        }
+    });
+}
+
+function hidePieceInfo() {
+    if (selectedPiece) {
+        selectedPiece.traverse(obj => {
+            if (obj.isMesh && obj.material.uniforms) {
+                obj.material.uniforms.emissive.value.setHex(0x000000);
+                obj.material.uniforms.emissiveIntensity.value = 0;
+            }
+        });
+        selectedPiece = null;
+    }
+    document.getElementById('pieceInfoPanel').classList.remove('visible');
+}
+
+function onMouseMove(event) {
+    // Calculate mouse position in normalized device coordinates
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    // Only check for hover when exploded
+    if (!isExploded) {
+        if (hoverPiece) {
+            hoverPiece.traverse(obj => {
+                if (obj.isMesh && obj.material.uniforms && obj !== selectedPiece) {
+                    obj.material.uniforms.emissive.value.setHex(0x000000);
+                    obj.material.uniforms.emissiveIntensity.value = 0;
+                }
+            });
+            hoverPiece = null;
+        }
+        return;
+    }
+    
+    raycaster.setFromCamera(mouse, camera);
+    
+    const allPieces = [...pieces.centers, ...pieces.edges, ...pieces.corners];
+    const intersects = raycaster.intersectObjects(allPieces, true);
+    
+    // Reset previous hover
+    if (hoverPiece && hoverPiece !== selectedPiece && (!intersects.length || intersects[0].object !== hoverPiece)) {
+        hoverPiece.traverse(obj => {
+            if (obj.isMesh && obj.material.uniforms && obj !== selectedPiece) {
+                obj.material.uniforms.emissive.value.setHex(0x000000);
+                obj.material.uniforms.emissiveIntensity.value = 0;
+            }
+        });
+        hoverPiece = null;
+    }
+    
+    // Set new hover
+    if (intersects.length > 0) {
+        const hitObject = intersects[0].object;
+        // Find the parent cubie
+        let cubie = hitObject;
+        while (cubie.parent && !pieces.centers.includes(cubie) && !pieces.edges.includes(cubie) && !pieces.corners.includes(cubie)) {
+            cubie = cubie.parent;
+        }
+        
+        if (cubie && (pieces.centers.includes(cubie) || pieces.edges.includes(cubie) || pieces.corners.includes(cubie)) && cubie !== selectedPiece) {
+            hoverPiece = cubie;
+            cubie.traverse(obj => {
+                if (obj.isMesh && obj.material.uniforms && obj !== selectedPiece) {
+                    obj.material.uniforms.emissive.value.setHex(0x00C9A7);
+                    obj.material.uniforms.emissiveIntensity.value = 0.2;
+                }
+            });
+        }
+    }
+}
+
+function onClick(event) {
+    if (!isExploded) return;
+    
+    const rect = renderer.domElement.getBoundingClientRect();
+    mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    
+    raycaster.setFromCamera(mouse, camera);
+    
+    const allPieces = [...pieces.centers, ...pieces.edges, ...pieces.corners];
+    const intersects = raycaster.intersectObjects(allPieces, true);
+    
+    if (intersects.length > 0) {
+        const hitObject = intersects[0].object;
+        let cubie = hitObject;
+        while (cubie.parent && !pieces.centers.includes(cubie) && !pieces.edges.includes(cubie) && !pieces.corners.includes(cubie)) {
+            cubie = cubie.parent;
+        }
+        
+        if (cubie && (pieces.centers.includes(cubie) || pieces.edges.includes(cubie) || pieces.corners.includes(cubie))) {
+            showPieceInfo(cubie);
+        }
+    } else {
+        // Clicked on background - hide info
+        hidePieceInfo();
+    }
+}
+
+// Close button
+document.getElementById('closePieceInfo').addEventListener('click', hidePieceInfo);
+
+// Event listeners
+renderer.domElement.addEventListener('mousemove', onMouseMove);
+renderer.domElement.addEventListener('click', onClick);
+
+// Hide info when assembling
+const originalAssemble = assemble;
+assemble = function(duration) {
+    hidePieceInfo();
+    return originalAssemble(duration);
+};
+
+const originalReset = resetView;
+resetView = function() {
+    hidePieceInfo();
+    return originalReset();
+};
+
+// ========== ANIMATION LOOP ==========
+let lastTime = performance.now();
+let fps = 60;
+
+function animate() {
+    requestAnimationFrame(animate);
+    controls.update();
+    
+    // FPS counter
+    const now = performance.now();
+    fps = Math.round(1000 / (now - lastTime));
+    lastTime = now;
+    document.getElementById('statFPS').textContent = fps;
+    
+    renderer.render(scene, camera);
+}
+
+// Resize
+window.addEventListener('resize', () => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w, h);
+    controls.handleResize();
+});
+
+// Start
+animate();
+setPiecesVisibility();
+updateButtonStates();
+updateSliderValues();
+</script>
+</body>
+</html>
