@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="V1Cf9ij28OhtGEmOvSzjfogcBFxz4xJzvjDeVzn-adU" />
     <title>O Cubo Mágico! — História, Algoritmos e Diversão</title>
     <link rel="stylesheet" href="style.css">
     
@@ -105,9 +106,10 @@
                         dominou o mundo inteiro!
                     </p>
                     <div class="btn-row">
-                        <button class="comic-btn btn-yellow" id="btn-scramble">GIRAR TUDO!</button>
-                        <button class="comic-btn btn-cyan" id="btn-solve">ARRUMAR!</button>
-                    </div>
+                                        <button class="comic-btn btn-yellow" id="btn-scramble">GIRAR TUDO!</button>
+                                        <button class="comic-btn btn-cyan" id="btn-solve">ARRUMAR!</button>
+                                        <button class="comic-btn btn-orange" id="btn-explode" style="background:#FF6B35;color:#111;">EXPLODIR!</button>
+                                    </div>
                 </div>
                 <div class="visual-side"></div>
             </div>
@@ -158,28 +160,71 @@
         </div>
 
         <!-- ===================== ANATOMIA (VERDE MENTA) ===================== -->
-        <section class="section section-anatomy">
-            <span class="sparkle" style="top:10%;left:12%;animation-delay:0.4s;">✦</span>
-            <span class="sparkle" style="bottom:10%;right:8%;animation-delay:1s;font-size:3rem;">★</span>
-            <div class="cloud" style="top:20px;right:-20px;"><svg viewBox="0 0 200 80" style="width:180px;"><ellipse cx="60" cy="50" rx="60" ry="30"/><ellipse cx="100" cy="40" rx="50" ry="28"/><ellipse cx="140" cy="50" rx="55" ry="30"/></svg></div>
+                <section class="section section-anatomy">
+                    <span class="sparkle" style="top:10%;left:12%;animation-delay:0.4s;">✦</span>
+                    <span class="sparkle" style="bottom:10%;right:8%;animation-delay:1s;font-size:3rem;">★</span>
+                    <div class="cloud" style="top:20px;right:-20px;"><svg viewBox="0 0 200 80" style="width:180px;"><ellipse cx="60" cy="50" rx="60" ry="30"/><ellipse cx="100" cy="40" rx="50" ry="28"/><ellipse cx="140" cy="50" rx="55" ry="30"/></svg></div>
+                    <div class="halftone-accent" style="top:10%;left:5%;"></div>
 
-            <div class="section-content split">
-                <div class="text-side">
-                    <span class="fun-badge">Você sabia?</span>
-                    <h1 class="section-title">AS PEÇAS!</h1>
-                    <p class="section-text">
-                        O Cubo NÃO É feito de 54 bloquinhos soltos. Na verdade, são 3 tipos de 
-                        peças conectadas a um núcleo central:
-                    </p>
-                    <p class="section-text">
-                        <strong>6 Centros</strong> — Não se movem! Definem a cor da face.<br>
-                        <strong>12 Arestas</strong> — Com 2 cores cada.<br>
-                        <strong>8 Quinas</strong> — Com 3 cores cada.
-                    </p>
-                </div>
-                <div class="visual-side"></div>
-            </div>
-        </section>
+                    <div class="section-content split">
+                        <div class="text-side">
+                            <span class="fun-badge">Você sabia?</span>
+                            <h1 class="section-title">AS PEÇAS!</h1>
+                            <p class="section-text">
+                                O Cubo NÃO É feito de 54 bloquinhos soltos. Na verdade, são 3 tipos de
+                                peças conectadas a um núcleo central:
+                            </p>
+                            <p class="section-text">
+                                <strong>6 Centros</strong> — Não se movem! Definem a cor da face.<br>
+                                <strong>12 Arestas</strong> — Com 2 cores cada.<br>
+                                <strong>8 Quinas</strong> — Com 3 cores cada.
+                            </p>
+                    
+                            <!-- Exploded View Panel - Estilo HQ -->
+                            <div class="anatomy-panel" id="anatomyPanel">
+                                <div class="anatomy-panel-header">
+                                    <span class="anatomy-panel-title">VISTA EXPLODIDA</span>
+                                    <span class="anatomy-panel-subtitle">Clique nas peças para ver detalhes</span>
+                                </div>
+                                <div class="anatomy-controls">
+                                    <button class="comic-btn btn-mint" id="btn-explode-anatomy">EXPLODIR</button>
+                                    <button class="comic-btn btn-cyan" id="btn-implode-anatomy" style="display:none;">IMPLODIR</button>
+                                </div>
+                                <div class="anatomy-legend" id="anatomyLegend">
+                                    <div class="legend-row">
+                                        <span class="legend-swatch" style="background:#FFFFFF;"></span>
+                                        <span class="legend-label">Centros <span class="legend-count">(6)</span></span>
+                                    </div>
+                                    <div class="legend-row">
+                                        <span class="legend-swatch" style="background:linear-gradient(90deg, #FFFFFF 50%, #FFD500 50%);"></span>
+                                        <span class="legend-label">Arestas <span class="legend-count">(12)</span></span>
+                                    </div>
+                                    <div class="legend-row">
+                                        <span class="legend-swatch" style="background:linear-gradient(90deg, #00FF00 33%, #FF8800 33%, #FF0000 34%);"></span>
+                                        <span class="legend-label">Quinas <span class="legend-count">(8)</span></span>
+                                    </div>
+                                    <div class="legend-row core-row">
+                                        <span class="legend-swatch" style="background:#1A1A1A; border:2px solid #444;"></span>
+                                        <span class="legend-label">Núcleo <span class="legend-count">(1)</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- Visual Side: Container para o cubo 3D na seção -->
+                        <div class="visual-side anatomy-visual" id="anatomy-visual">
+                            <div class="anatomy-canvas-wrapper">
+                                <canvas id="anatomy-canvas"></canvas>
+                                <div class="anatomy-overlay" id="anatomyOverlay">
+                                    <div class="overlay-instruction">
+                                        <svg viewBox="0 0 60 60" class="pulse-icon"><circle cx="30" cy="30" r="25" fill="none" stroke="#FF6B35" stroke-width="3"/><text x="30" y="36" text-anchor="middle" fill="#FF6B35" font-family="Bangers" font-size="18">⚡</text></svg>
+                                        <span>Exploda para ver o núcleo!</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
         <!-- Wave: Verde → Rosa -->
         <div class="wave-divider">

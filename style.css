@@ -596,6 +596,263 @@ body {
 }
 
 /* =========================================
+   ANATOMIA - PAINEL VISTA EXPLODIDA (Estilo HQ)
+========================================= */
+.anatomy-panel {
+    background: var(--dark);
+    border: 4px solid var(--mint);
+    border-radius: 12px;
+    padding: var(--space-lg);
+    margin-top: var(--space-lg);
+    box-shadow: 
+        0 0 0 2px var(--dark),
+        8px 8px 0 var(--mint),
+        0 0 30px rgba(0, 201, 167, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.anatomy-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1.5px);
+    background-size: 8px 8px;
+    pointer-events: none;
+    opacity: 0.3;
+}
+
+.anatomy-panel-header {
+    text-align: center;
+    margin-bottom: var(--space-md);
+    position: relative;
+    z-index: 1;
+}
+
+.anatomy-panel-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    color: var(--mint);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    text-shadow: 3px 3px 0 var(--dark);
+    display: block;
+    margin-bottom: 4px;
+}
+
+.anatomy-panel-subtitle {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    font-weight: 600;
+}
+
+.anatomy-controls {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+    position: relative;
+    z-index: 1;
+}
+
+.anatomy-controls .comic-btn {
+    font-size: 1.1rem;
+    padding: 12px 28px;
+}
+
+.anatomy-controls .btn-mint {
+    background: var(--mint);
+    color: var(--dark);
+    border-color: var(--dark);
+}
+
+.anatomy-controls .btn-mint:hover {
+    box-shadow: 8px 8px 0 var(--dark);
+    background: #00E5C7;
+}
+
+.anatomy-controls .btn-cyan {
+    background: #00E5FF;
+    color: var(--dark);
+    border-color: var(--dark);
+}
+
+.anatomy-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    z-index: 1;
+    padding-top: var(--space-md);
+    border-top: 2px dashed rgba(0, 201, 167, 0.4);
+}
+
+.legend-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(0, 201, 167, 0.2);
+    transition: all 0.2s;
+}
+
+.legend-row:hover {
+    background: rgba(0, 201, 167, 0.1);
+    border-color: var(--mint);
+    transform: translateX(4px);
+}
+
+.legend-row.core-row {
+    background: rgba(255, 107, 53, 0.1);
+    border-color: rgba(255, 107, 53, 0.3);
+}
+
+.legend-row.core-row:hover {
+    background: rgba(255, 107, 53, 0.2);
+    border-color: var(--orange);
+}
+
+.legend-swatch {
+    width: 36px;
+    height: 24px;
+    border: 2px solid var(--dark);
+    border-radius: 4px;
+    flex-shrink: 0;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.5);
+}
+
+.legend-label {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--white);
+}
+
+.legend-count {
+    font-family: var(--font-display);
+    font-size: 0.85rem;
+    color: var(--mint);
+    margin-left: 6px;
+}
+
+.legend-row.core-row .legend-count {
+    color: var(--orange);
+}
+
+/* Anatomy Visual Side */
+.anatomy-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.anatomy-canvas-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 450px;
+    aspect-ratio: 1;
+    border: 4px solid var(--dark);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--dark);
+    box-shadow: 
+        0 0 0 2px var(--mint),
+        12px 12px 0 rgba(0, 201, 167, 0.3),
+        0 0 40px rgba(0, 201, 167, 0.15);
+}
+
+.anatomy-canvas-wrapper canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.anatomy-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 17, 17, 0.85);
+    z-index: 10;
+    pointer-events: none;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.anatomy-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.overlay-instruction {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    text-align: center;
+    padding: var(--space-lg);
+    animation: pulse-instruction 2s ease-in-out infinite;
+}
+
+@keyframes pulse-instruction {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.02); opacity: 1; }
+}
+
+.pulse-icon {
+    animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.3); opacity: 0; }
+}
+
+.overlay-instruction span {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    color: var(--mint);
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 var(--dark);
+}
+
+/* Botão mint para anatomia */
+.btn-mint { background: var(--mint); color: var(--dark); }
+
+/* Responsividade Anatomia */
+@media (max-width: 768px) {
+    .anatomy-panel {
+        padding: var(--space-md);
+    }
+    
+    .anatomy-panel-title {
+        font-size: 1.2rem;
+    }
+    
+    .anatomy-controls {
+        flex-direction: column;
+    }
+    
+    .anatomy-controls .comic-btn {
+        width: 100%;
+    }
+    
+    .legend-swatch {
+        width: 28px;
+        height: 18px;
+    }
+    
+    .anatomy-canvas-wrapper {
+        max-width: 100%;
+    }
+}
+
+/* =========================================
    RESPONSIVIDADE
 ========================================= */
 @media (max-width: 768px) {
